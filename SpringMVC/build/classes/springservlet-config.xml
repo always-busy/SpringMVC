@@ -17,6 +17,7 @@
 	
 	<!-- 默认的注解映射的支持 -->  
     <mvc:annotation-driven/>
+    
       
     <!-- 如果当前请求为“/”时，则转发到“/helloworld/index" -->
     <mvc:view-controller path="/" view-name="forward:/helloworld/index"/> 
@@ -31,8 +32,13 @@
 
 	<!-- 开启controller注解支持 -->
     <!-- use-default-filters="false" 只扫描指定的注解 -->
-    <context:component-scan base-package="com.demo.web.controllers" use-default-filters="false">
-        <context:include-filter type="annotation" expression="org.springframework.stereotype.Controller"/>
+    <context:component-scan 
+        base-package="com.demo.web.controllers" 
+        use-default-filters="false">
+        
+        <context:include-filter 
+            type="annotation" 
+            expression="org.springframework.stereotype.Controller"/>
     </context:component-scan>
 	
     <!-- 视图解析器 -->
@@ -51,6 +57,46 @@
         <property name="defaultEncoding">
             <value>UTF-8</value>
             </property>
-            </bean>
+     </bean>          
     
-</beans>
+      <!-- 默认的注解映射的支持 --> 
+    <mvc:annotation-driven validator="validator" conversion-service="conversion-service"/>     
+   	 	<bean id="validator" class="org.springframework.validation.beanvalidation.LocalValidatorFactoryBean">
+        	<property name="providerClass"  value="org.hibernate.validator.HibernateValidator"/>
+        	<!--不设置则默认为classpath下的 ValidationMessages.properties -->
+        	<property name="validationMessageSource" ref="validatemessageSource"/>
+    	</bean>
+		
+		<bean id="conversion-service" class="org.springframework.format.support.FormattingConversionServiceFactoryBean" />
+    	<bean id="validatemessageSource" class="org.springframework.context.support.ReloadableResourceBundleMessageSource">  
+        	<property name="basename" value="classpath:validatemessages"/>  
+        	<property name="fileEncodings" value="utf-8"/>  
+        	<property name="cacheSeconds" value="120"/>  
+   		 </bean>
+    
+    	<bean id="messageSource" class="org.springframework.context.support.ResourceBundleMessageSource">
+		<!-- 国际化信息所在的文件名 -->                     
+		<property name="basename" value="messages" />   
+		<!-- 如果在国际化资源文件中找不到对应代码的信息，就用这个代码作为名称  -->               
+		<property name="useCodeAsDefaultMessage" value="true" />           
+	</bean>  
+		
+    	<mvc:interceptors>
+    	    <!-- 国际化操作拦截器，如果采用基于（请求/session/Cookie）则必须配置 -->
+    		<bean class="org.springframework.web.servlet.i18n.LocaleChangeInterceptor" />
+    	</mvc:interceptors>
+    	
+    	<!-- Session实现的国际化 -->
+		<!-- <bean id="lacaleResolver" class="org.springframework.web.servlet.i18n.SessionLocaleResolver" /> -->    	
+    	
+    	<!-- 用Cookie实现国际化 -->
+    	<bean id="localeResolver" class="org.springframework.web.servlet.i18n.CookieLocaleResolver" />
+    	
+    	<!-- 拦截器 -->
+    	<mvc:interceptors>
+    	    <bean class="org.springframework.web.servlet.i18n.LocaleChangeInterceptor"/>
+    	    <bean class="com.demo.web.auth.AuthInterceptor"/>
+    	</mvc:interceptors>
+    	
+     	<bean id="exceptionResolver" class="com.demo.web.exception.MyHandlerExceptionResolver" />
+ </beans>

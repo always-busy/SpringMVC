@@ -1,9 +1,18 @@
 package com.demo.web.models;
 
-public class AccountModel {
+import java.io.Serializable;
+
+public class AccountModel implements Serializable{
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private String username;
 	private String password;
+	
+	public AccountModel(){}
+	
 	public String getUsername() {
 		return username;
 	}

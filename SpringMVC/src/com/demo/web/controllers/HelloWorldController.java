@@ -1,10 +1,14 @@
 package com.demo.web.controllers;
 
+import java.sql.SQLException;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
+
+import com.demo.web.auth.AuthPassport;
 
 /**
  * @author ZKX
@@ -13,16 +17,19 @@ import org.springframework.web.servlet.ModelAndView;
 @Controller
 	// 这表示对该controller的所有action请求必须是以"/helloworld”开始。
 @RequestMapping(value = "/helloworld")
-public class HelloWorldController {
+public class HelloWorldController extends BaseController{
 
 	//对该Action设置了两个映射
-	@RequestMapping(value={"/index","/hello"}, method = {RequestMethod.POST})
-    public ModelAndView index(){
+	@AuthPassport
+	@RequestMapping(value={"/index","/hello"})
+    public ModelAndView index() throws SQLException{
 		
-		ModelAndView modelAndView = new ModelAndView();  
-		modelAndView.addObject("message", "Hello World!");  
-		modelAndView.setViewName("index");  
-        return modelAndView;
+		throw new SQLException("database error");
+		
+//		ModelAndView modelAndView = new ModelAndView();  
+//		modelAndView.addObject("message", "Hello World!");  
+//		modelAndView.setViewName("index");  
+//        return modelAndView;
     }
 	//传递id的值
 	@RequestMapping(value = "/detail/{id}",method = {RequestMethod.GET})
@@ -33,6 +40,7 @@ public class HelloWorldController {
 		return modelAndView;
 	}
 	
+	@AuthPassport
 	//Spring MVC会按照最长匹配优先原则（即和映射配置中哪个匹配的最多）
 	@RequestMapping(value = "/*",method = {RequestMethod.GET})
 	public ModelAndView urlTest(){
